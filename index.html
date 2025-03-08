@@ -1,0 +1,243 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A expense tracker ">
+    <meta name="keywords" content="HTML+>CSS+>Js">
+    <meta name="author" content="V">
+    
+    <title>EXPENSE_TRACKER</title>
+</head>
+
+
+<body >
+    
+
+    <style>
+.maindiv {
+            display: flex;
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            height: 100vh; 
+          
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+    background-image: url('');
+    background-size: cover;  /* Cover entire div */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Prevent repeating */
+    background-attachment: fixed; /* Keep it fixed while scrolling */
+            
+
+        }
+
+       
+        .maindiv div {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            align-items: center;
+        }
+
+       
+.input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    gap: 10px; 
+    width: 100%;
+    max-width: 350px; 
+    margin: 20px auto; 
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #ddd; 
+}
+
+.mainform {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+}
+
+
+.mainform:focus {
+    border-color: #007bff; 
+}
+ 
+
+
+.mainform{
+    border: 2px solid rgb(16, 14, 14);
+    border-radius: 4px;
+}
+.editbt{
+    background-image: linear-gradient(-180deg, #37AEE2 0%, #1E96C8 100%);
+  border-radius: .5rem;
+  box-sizing: border-box;
+  color: #090909;
+  display: flex;
+  font-size: 16px;
+  justify-content: center;
+  padding: 1rem 1.75rem;
+  text-decoration: none;
+  width: 25%;
+  border: 2px solid black;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+    </style>
+<div class="maindiv">
+
+   
+        <h1>EXPENSE_TRACKER</h1>
+       <div class="input-container">
+        <input type="text" id="name" class="mainform" required placeholder="Enter the expense"  oninput="validateinp()"> 
+        <input type="number" id="value" class="mainform" required placeholder="Enter the value" oninput="validateinp()"> 
+        <input type="number" id="id" class="mainform"  placeholder="Enter id for only for editing or deleting">
+       </div>
+     
+        <div class="buttongrp">
+        
+            <button class="editbt" id="addbt" onclick="addexpense()" disabled>Add</button>
+            <button class="editbt" id="editbt" onclick="editexpense()">Edit</button>
+            <button class="editbt" id="delbt"  onclick="deletexpense()">Delete</button>
+            <button class="editbt" id="viewbt" onclick="viewexpense()">View</button>
+
+             <h3 id="output1">Crud Operations</h3>
+             <div>
+                <h3>Expense List</h3>
+                <div id="expenseList"></div>
+                <h3 id="totalAmount">Total Spending: ₹0</h3>
+            </div>
+
+        </div>
+
+    
+</div>
+
+
+<script>
+let arr = [];
+let id = 1;
+
+function validateinp() {
+    let name = document.getElementById("name").value.trim();
+    let amt = document.getElementById("value").value.trim();
+    
+    // Enable the button only if both fields are filled
+    document.getElementById("addbt").disabled = !(name && !isNaN(amt) && amt > 0);
+}
+
+function addexpense() {
+    let name = document.getElementById("name").value.trim();
+    let amt = parseFloat(document.getElementById("value").value);
+
+    if (name && !isNaN(amt) && amt > 0) {
+        document.getElementById("output1").innerText = `Added: ${name} - ₹${amt}`;
+        arr.push({ id: id++, name, amt });
+
+        document.getElementById("name").value = "";
+        document.getElementById("value").value = "";
+
+    
+        document.getElementById("addbt").disabled = true;
+
+       
+    } else {
+        document.getElementById("output1").innerText = "Please enter valid values.";
+    }
+}
+
+function viewexpense() {
+    let total = 0;
+    let expenseList = document.getElementById("expenseList");
+    let totalAmount = document.getElementById("totalAmount");
+
+    expenseList.innerHTML = ""; 
+
+    if (arr.length === 0) {
+        expenseList.innerHTML = "<p>No expenses recorded.</p>";
+        totalAmount.innerText = "Total Spending: ₹0";
+        return;
+    }
+    
+    arr.forEach(exp => {
+        total += exp.amt;
+
+        let item = document.createElement("p");
+        item.innerText = `ID: ${exp.id} | Amount: ₹${exp.amt} | Expense: ${exp.name}`;
+        expenseList.appendChild(item);
+    });
+
+    totalAmount.innerText = `Total Spending: ₹${total}`;
+}
+function editexpense() {
+    if (arr.length === 0) {
+        document.getElementById("output1").innerText = "No expenses recorded.";
+        return;
+    }
+
+    let id = parseInt(document.getElementById("id").value);
+    let exp = arr.find(e => e.id === id);
+
+    if (!exp) {
+        document.getElementById("output1").innerText = "Expense not found.";
+        return;
+    }
+   let name1= document.getElementById("name").value ;
+   let amt1= document.getElementById("value").value ;
+    if (name1 !== "" && !isNaN(amt1) && amt1 > 0) {
+        exp.name = name1;
+        exp.amt = amt1;
+        document.getElementById("output1").innerText = "Expense updated successfully.";
+      
+    } else {
+        document.getElementById("output1").innerText = "Invalid input.";
+    }
+    document.getElementById("name").value = "";
+    document.getElementById("value").value = "";
+    document.getElementById("id").value = "";
+}
+function deletexpense() {
+    
+    if(arr.length === 0){
+        document.getElementById("output1").innerText = "No expenses recorded.";
+    return;
+}
+
+let id = parseInt(document.getElementById("id").value);
+let len = arr.length;
+let brr = [];
+
+for (let i = 0; i < arr.length; i++) {
+    if (arr[i].id !== id) {
+        brr.push(arr[i]);
+    }
+}
+
+arr = brr;
+
+if (arr.length < len) {
+    document.getElementById("output1").innerText ="Expense deleted successfully.";
+    
+} else {
+    document.getElementById("output1").innerText = "Expense not found.";
+   
+}
+document.getElementById("id").value = "";
+}
+</script>
+
+</body>
+
+</html>
